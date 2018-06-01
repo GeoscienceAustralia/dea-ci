@@ -4,6 +4,14 @@ set -eu
 
 # Install deps
 pip3 install awslogs
+rm -f /usr/local/bin/terraform
+
+curl -o terraform.zip $(echo "https://releases.hashicorp.com/terraform/$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r -M '.current_version')/terraform_$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r -M '.current_version')_linux_amd64.zip")
+
+# Unzip and install
+unzip terraform.zip
+mv terraform /usr/local/bin/terraform
+terraform -v 
 
 # Deploy
 cd git-resource
