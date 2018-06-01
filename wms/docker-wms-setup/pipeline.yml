@@ -1,0 +1,25 @@
+---
+resources:
+- name: git-resource
+  type: git
+  source:
+    uri: https://github.com/opendatacube/datacube-ecs.git
+    paths: 
+    - docker/datacube-wms/setup
+    branch: master
+- name: docker-image-resource
+  type: docker-image
+  source:
+    repository: geoscienceaustralia/datacube-wms-setup
+    username: ((dockerhub-username))
+    password: ((dockerhub-password))
+
+jobs:
+- name: build-image
+  plan:
+  - get: git-resource
+    trigger: true
+  - put: docker-image-resource
+    params: 
+      build: git-resource/docker/datacube-wms/setup
+      dockerfile: git-resource/docker/datacube-wms/setup/setup-Dockerfile

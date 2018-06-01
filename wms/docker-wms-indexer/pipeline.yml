@@ -1,0 +1,53 @@
+---
+# If 
+# https://github.com/opendatacube/datacube-ecs
+# has an update to docker/datacube-wms/indexing
+# in the master branch
+
+# Then
+# Download the Git Repo
+# Create a build directory that includes the indexer script
+# Generate a docker image and upload it to dockerhub
+
+resources:
+- name: git-resource
+  type: git
+  source:
+    uri: https://github.com/opendatacube/datacube-ecs.git
+    paths: 
+    - docker/datacube-wms/indexing
+    branch: master
+- name: docker-image-resource
+  type: docker-image
+  source:
+    repository: geoscienceaustralia/datacube-wms-indexer
+    username: ((dockerhub-username))
+    password: ((dockerhub-password))
+
+jobs:
+- name: build-image
+  plan:
+  - get: git-resource
+    trigger: true
+  - task: create-build-dir
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: busybox}
+
+      inputs:
+      - name: git-resource
+      outputs:
+      - name: build-dir
+
+      run:
+        path: /bin/sh
+        args:
+          - -c
+          - mv -v git-resource/indexer/ls_s2_cog.py git-resource/docker/datacube-wms/indexing/assets/; mv -v git-resource/docker/datacube-wms/indexing/* build-dir; ls -la build-dir;
+  - put: docker-image-resource
+    params: 
+      build: build-dir
+      dockerfile: build-dir/index-Dockerfile
+      
