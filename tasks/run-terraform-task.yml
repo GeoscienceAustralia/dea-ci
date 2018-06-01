@@ -12,6 +12,7 @@ image_resource:
 params:
 - AWS_ACCESS_KEY_ID: ((aws-access-key))
 - AWS_SECRET_ACCESS_KEY: ((aws-secret-key))
+- AWS_DEFAULT_REGION: ap-southeast-2
 
 run:
   path: git-dea-ci/tasks/run-terraform-task.sh
