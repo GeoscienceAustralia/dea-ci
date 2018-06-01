@@ -34,6 +34,7 @@ jobs:
     passed: [setup-db]
     trigger: true
   - get: git-dea-ci
+    passed: [setup-db]
   - task: create-build-dir
     file: git-dea-ci/tasks/run-terraform-task.yml
     params:
@@ -43,9 +44,10 @@ jobs:
 - name: start-wms
   plan:
   - get: git-resource
-    passed: [start-wms]
+    passed: [generate-index]
     trigger: true
   - get: git-dea-ci
+    passed: [generate-index]
   - task: create-build-dir
     file: git-dea-ci/tasks/run-terraform-task.yml
     params:
