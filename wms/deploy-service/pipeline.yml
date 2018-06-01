@@ -38,7 +38,7 @@ jobs:
     file: git-dea-ci/tasks/run-terraform-task.yml
     params:
       APP: ((service-name))-index
-      STRING: ranges
+      STRING: "Updated ranges"
 
 - name: start-wms
   plan:
