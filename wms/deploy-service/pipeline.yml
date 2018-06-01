@@ -1,0 +1,53 @@
+---
+# Download https://github.com/opendatacube/datacube-ecs
+
+
+resources:
+- name: git-resource
+  type: git
+  source:
+    uri: https://github.com/opendatacube/datacube-ecs.git
+    paths: 
+    - docker/datacube-wms/indexing
+    branch: master
+- name: git-dea-ci
+  type: git
+  source:
+    uri: https://github.com/GeoscienceAustralia/dea-ci.git
+    branch: master
+
+jobs:
+- name: setup-db
+  plan:
+  - get: git-resource
+    trigger: true
+  - get: git-dea-ci
+  - task: create-build-dir
+    file: git-dea-ci/tasks/run-terraform-task.yml
+    params:
+      APP: ((service-name))-db
+      STRING: "Apply complete"
+
+- name: generate-index
+  plan:
+  - get: git-resource
+    passed: [setup-db]
+    trigger: true
+  - get: git-dea-ci
+  - task: create-build-dir
+    file: git-dea-ci/tasks/run-terraform-task.yml
+    params:
+      APP: ((service-name))-index
+      STRING: ranges
+
+- name: start-wms
+  plan:
+  - get: git-resource
+    passed: [start-wms]
+    trigger: true
+  - get: git-dea-ci
+  - task: create-build-dir
+    file: git-dea-ci/tasks/run-terraform-task.yml
+    params:
+      APP: ((service-name))
+      STRING: Listening
