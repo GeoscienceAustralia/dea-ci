@@ -13,6 +13,9 @@ unzip terraform.zip
 mv terraform /usr/local/bin/terraform
 terraform -v 
 
+apt-get -y update
+apt-get install -y docker
+
 # Deploy
 cd git-resource
 ./deploy.sh $APP
